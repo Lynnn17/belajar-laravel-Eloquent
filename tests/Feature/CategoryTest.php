@@ -206,8 +206,11 @@ class CategoryTest extends TestCase
        $category = Category::withoutGlobalScopes([IsActiveScope::class])->find("FOOD");
        self::assertNotNull($category);
 
-
    }
+
+   // local scope secara default tidak akan aktif
+
+
 
 
 }
