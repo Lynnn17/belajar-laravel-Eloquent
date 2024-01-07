@@ -3,12 +3,16 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\Scopes\IsActiveScope;
 use Database\Seeders\CategorySeeder;
+use Database\Seeders\ProductSeeder;
+use Database\Seeders\WalletSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use function PHPUnit\Framework\assertEquals;
+use function PHPUnit\Framework\assertNotNull;
 use function PHPUnit\Framework\assertTrue;
 
 class CategoryTest extends TestCase
@@ -208,9 +212,57 @@ class CategoryTest extends TestCase
 
    }
 
-   // local scope secara default tidak akan aktif
+  public function testOneToMany()
+  {
+    $this->seed([
+        CategorySeeder::class,
+        ProductSeeder::class
+        ]);
 
+    $category = Category::find("FOOD");
+    assertNotNull($category);
 
+    $product = $category->products;
+
+    assertNotNull($product);
+    self::assertCount(1, $product);
+
+  }
+
+  public function testOneToManyInsert()
+  {
+      $category = new Category();
+      $category->id = "FOOD";
+      $category->name = "Food";
+      $category->description = "Food Category";
+      $category->is_active = true;
+      $category->save();
+
+      $product = new Product();
+      $product->id = "1";
+      $product->name = "Product 1";
+      $product->description = "Product 1 Description";
+
+      $category->products()->save($product);
+
+      assertNotNull($product);
+
+  }
+
+  public function testRelationshipQuery()
+  {
+      $this->seed([
+          CategorySeeder::class,
+          ProductSeeder::class
+          ]);
+
+      $category = Category::find("FOOD");
+      $products = $category->products;
+      self::assertCount(1, $products);
+      $outOfStockProducts =$category->products()->where("stock","<=",0)->get();
+      self::assertCount(1, $outOfStockProducts);
+
+  }
 
 
 }

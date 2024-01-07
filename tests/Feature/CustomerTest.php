@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Customer;
+use App\Models\Wallet;
 use Database\Seeders\CustomerSeeder;
 use Database\Seeders\WalletSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -29,6 +30,20 @@ class CustomerTest extends TestCase
         self::assertEquals(1000000, $wallet->amount);
     }
 
+    public function testOneToOneInsert()
+    {
+        $customer = new Customer();
+        $customer->id = "LYN";
+        $customer->name = "Lyn";
+        $customer->email = "lyn@gmail.com";
+        $customer->save();
+
+        $wallet = new Wallet();
+        $wallet->amount = 1000000;
+        $customer->wallet()->save($wallet);
+
+        assertNotNull($wallet->customer_id);
+    }
 
 
 }
