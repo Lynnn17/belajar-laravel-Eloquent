@@ -6,11 +6,14 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Scopes\IsActiveScope;
 use Database\Seeders\CategorySeeder;
+use Database\Seeders\CustomerSeeder;
 use Database\Seeders\ProductSeeder;
+use Database\Seeders\ReviewSeeder;
 use Database\Seeders\WalletSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertEquals;
 use function PHPUnit\Framework\assertNotNull;
 use function PHPUnit\Framework\assertTrue;
@@ -263,6 +266,27 @@ class CategoryTest extends TestCase
       self::assertCount(1, $outOfStockProducts);
 
   }
+
+    public function testHasManyThrough()
+    {
+        $this->seed([
+            CategorySeeder::class,
+            ProductSeeder::class,
+            CustomerSeeder::class,
+            ReviewSeeder::class
+        ]);
+
+        $category = Category::find("FOOD");
+        assertNotNull($category);
+
+        $review = $category->review;
+        assertNotNull($review);
+        assertCount(2, $review);
+
+
+    }
+
+
 
 
 }
