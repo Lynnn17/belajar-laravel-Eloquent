@@ -37,7 +37,8 @@ class CategoryTest extends TestCase
         for ($i = 0; $i < 10; $i++) {
             $categories[] = [
                 'id' => "id $i",
-                'name' => "Name $i"
+                'name' => "Name $i",
+                'is_active' => true
             ];
         }
 
@@ -89,6 +90,7 @@ class CategoryTest extends TestCase
             $category = new Category();
             $category->id = "ID $i";
             $category->name = "Name $i";
+            $category->is_active = true;
             $category->save();
         }
 
@@ -110,6 +112,7 @@ class CategoryTest extends TestCase
             $categories[] = [
                 "id" => "ID $i",
                 "name" => "Name $i",
+                "is_active" => true
             ];
         }
 
@@ -143,6 +146,7 @@ class CategoryTest extends TestCase
             $categories[] = [
                 "id" => "ID $i",
                 "name" => "Name $i",
+                "is_active" => true
             ];
         }
 
@@ -228,7 +232,7 @@ class CategoryTest extends TestCase
     $product = $category->products;
 
     assertNotNull($product);
-    self::assertCount(1, $product);
+    self::assertCount(2, $product);
 
   }
 
@@ -261,9 +265,9 @@ class CategoryTest extends TestCase
 
       $category = Category::find("FOOD");
       $products = $category->products;
-      self::assertCount(1, $products);
+      self::assertCount(2, $products);
       $outOfStockProducts =$category->products()->where("stock","<=",0)->get();
-      self::assertCount(1, $outOfStockProducts);
+      self::assertCount(2, $outOfStockProducts);
 
   }
 
@@ -286,7 +290,33 @@ class CategoryTest extends TestCase
 
     }
 
+    public function testQueryingRelations()
+    {
+        $this->seed([
+            CategorySeeder::class,
+            ProductSeeder::class
+        ]);
 
+        $category = Category::find("FOOD");
+        $products = $category->products()->where("price","=",200000)->get();
+        assertCount(1,$products );
+        self::assertEquals("2", $products[0]->id );
+    }
+
+    public function testAggregationRelations()
+    {
+        $this->seed([
+            CategorySeeder::class,
+            ProductSeeder::class
+        ]);
+
+        $category = Category::find("FOOD");
+        $total = $category->products()->count();
+        self::assertEquals(2, $total );
+
+        $total = $category->products()->where('price',200000)->count();
+        self::assertEquals(1, $total );
+    }
 
 
 }

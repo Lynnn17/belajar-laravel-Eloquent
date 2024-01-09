@@ -155,5 +155,14 @@ class CustomerTest extends TestCase
         }
     }
 
+    // Eager dengan menggunakan with() fungsinya untuk langsung dijalankan tanpa di panggil terlebih dahulu
+    public function testEager()
+    {
+        $this->seed([CustomerSeeder::class,WalletSeeder::class]);
+
+        $customer = Customer::with('wallet')->find("LYN");
+        assertNotNull($customer);
+    }
+
 
 }

@@ -18,6 +18,11 @@ class Category extends Model
     public $incrementing = false;
     public $timestamps = false;
 
+    protected $casts= [
+        //Dokumentasi Date Format di https://www.php.net/manual/en/datetime.format.php
+        'created_at' => 'datetime:U'
+    ];
+
     // jadi secara bawaan attribute di model tidak bisa di set secara massal menggunakan method create()
     // jadi kita harus memberitahu attribute mana saja yang bisa diubah dengan menggunakan attribute $fillable di modelnya
 
